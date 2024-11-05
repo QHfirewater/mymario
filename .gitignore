@@ -1,0 +1,9 @@
+*.pth
+*.pth.tar
+*.mp4
+*.pyc
+*.wandb
+*.txt
+*.json
+*.log
+*.yaml
