@@ -15,8 +15,8 @@ def model_evalutor(global_model,env_id,world,stage,):
     env = get_instance_env(env_id,world,stage)
     action_shape = env.action_space.n
     obs_shape = env.observation_space.shape[0]
-    model = Model(obs_shape,action_shape)
-
+    # model = Model(obs_shape,action_shape)
+    model = global_model
 
     obs = env.reset()
     eval_reward = 0
@@ -43,7 +43,7 @@ def model_evalutor(global_model,env_id,world,stage,):
                 res = (eval_reward,eval_step,eval_position)
                 # child.send(res)
                 # train_state_dict = child.recv()
-                model.load_state_dict(global_model.state_dict())
+                # model.load_state_dict(global_model.state_dict())
                 eval_reward = 0 
                 eval_step = 0
 

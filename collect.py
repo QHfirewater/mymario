@@ -6,7 +6,7 @@ from envs.env_manage import MultiEnvManager
 from models.model import Model
 
 
-def collector(collect_child_pipe,global_env,collect_env_num,collect_steps =512,gamma =0.9,tau=1, device = 'cpu'):
+def collector(collect_child_pipe,global_env,global_model,collect_env_num,collect_steps =512,gamma =0.9,tau=1, device = 'cpu'):
     envs = MultiEnvManager(global_env,collect_env_num)
     obs_shape = global_env.observation_space.shape[0]
     action_shape = global_env.action_space.n
@@ -30,6 +30,7 @@ def collector(collect_child_pipe,global_env,collect_env_num,collect_steps =512,g
     dones = []
     # print('opt.collect_steps',opt.collect_steps)
     while True:
+        model.load_state_dict(global_model.state_dict())
         with torch.no_grad():
             model.eval()
             old_log_policies = []
@@ -94,6 +95,6 @@ def collector(collect_child_pipe,global_env,collect_env_num,collect_steps =512,g
 
     
         collect_child_pipe.send(timesteps)
-        model_state = collect_child_pipe.recv()
-        model.load_state_dict(model_state)
+        # model_state = collect_child_pipe.recv()
+        
 

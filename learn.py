@@ -4,8 +4,9 @@ from torch.nn import functional as F
 from torch.distributions import Categorical
 
 class Multistep_learn:
-    def __init__(self,model,lr=1e-4,num_per_epochs = 10,device = 'cpu',epsilon = 0.2, beta = 0.01, batch_size = 256) -> None:
-        self.model = model
+    def __init__(self,global_model,lr=1e-4,num_per_epochs = 10,device = 'cpu',epsilon = 0.2, beta = 0.01, batch_size = 256) -> None:
+        
+        self.model = global_model
         self.lr =lr
         self.num_per_epochs = num_per_epochs
         self.device = device
@@ -79,5 +80,7 @@ class Multistep_learn:
         log_info['value_mean'] = np.mean(value_mean_list)
         log_info['advantages'] = np.mean(advantages_list)
 
-        return self.model.state_dict(),log_info
-      
+        
+        return  log_info
+
+        # return self.model.state_dict()

@@ -48,6 +48,8 @@ class PPO:
         #生成神经网络模型
         self.model = Model(obs_shape[0], action_shape)
         self.model.share_memory()
+        
+    
         logger.info('神经网络启动成功')
 
 
@@ -68,10 +70,11 @@ class PPO:
         collect_steps = 512
         gamma = 0.9
         tau = 1
-        device = 'cuda'
+        device = 'cuda:0'
         collect_env_num = 10
         process = mp.Process(target=collector, args=(collect_child_pipe,
                                                     self.env, 
+                                                    self.model,
                                                     collect_env_num,
                                                     collect_steps,
                                                     gamma,
@@ -82,9 +85,9 @@ class PPO:
 
 
 
-        lr=1e-5
+        lr=5e-5
         num_per_epochs = 10 
-        device = 'cuda'
+        device = 'cuda:0'
         epsilon = 0.2
         beta = 0.01
         batch_size = 512
@@ -97,10 +100,6 @@ class PPO:
         # eval_pare_pipe,eval_child_pipe = mp.Pipe()
         process = mp.Process(target=model_evalutor, args=(self.model,self.env_id,self.world,self.stage))
         process.start()
-
-        # #模型评估
-        # eval_reward,eval_step,eval_position = eval_pare_pipe.recv()
-        # eval_pare_pipe.send(model_state)
 
         logger.info('初始化评估器')
     
@@ -117,9 +116,11 @@ class PPO:
 
 
             #模型迭代
-            model_state,log_info = learner(timesteps)
-            collect_pare_pipe.send(model_state)
-            self.model.load_state_dict(model_state)
+
+            log_info = learner(timesteps)
+            # collect_pare_pipe.send(self.model.state_dict())
+            # self.model.load_state_dict(model_state)
+
 
 
 

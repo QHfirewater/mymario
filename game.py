@@ -8,11 +8,16 @@ def mario():
     #3-4？
     #4-3
     #4-4
-    algo = PPO(env_id=env_id,world=1,stage=3)
+    #5-3
+    #6-3
+    #7-2 关卡重复
+    #7-3 关卡重复
+    #7-4 关卡重复
+    algo = PPO(env_id=env_id,world=8,stage=2)
     algo.train()
-    # video_path = r'D:\reinforce\mario\my_mario\movie\1_3.mp4'
-    # model_stat = r'D:\reinforce\mario\my_mario\ckpt\80_iteration.pth.tar'
-    algo.deploy(model_stat,video_path)
+    # video_path = r'D:\reinforce\mario\my_mario\movie\7_1.mp4'
+    # model_stat = r'D:\reinforce\mario\my_mario\movie\get_flag_7_1.pth.tar'
+    # algo.deploy(model_stat,video_path)
 
 
 if __name__ == '__main__': 

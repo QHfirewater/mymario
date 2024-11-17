@@ -40,7 +40,7 @@ class MultiEnvManager:
             action = child_pipe.recv()
             obs,reward,done,info = env.step(action)
             if done:
-                obs = env.reset() 
+                obs = env.reset()    #如果结束，就重启环境
 
     def __init__(self,global_env,env_num) -> None:
         
@@ -63,35 +63,21 @@ class MultiEnvManager:
 
 
 if __name__  == '__main__':
+
+
+    env = get_instance_env('mario',1,1,None)
+
+    obs = env.reset()
     
 
-    envs = MultiEnvManager(env_id='mario',env_num=3,world=1,stage=1)
-    obs_list = []
-    action_list = []
-    old_log_policy_list = []
-    reward_list = []
-    value_list = []
-    done_list = []
-    info_list = []
-    next_obs_list = []
-
-    # current_obs, action, old_log_policy ,reward, value, done, info , obs
-
-    for x in range(50):
-        print('第{}波'.format(x))
-        for i in range(3):
-            obs,reward,done,info = envs.pipe_parents[i].recv()
-            action = np.random.randint(0,7)
-            envs.pipe_parents[i].send(action)
-
-            obs_list.append(obs)
-            action_list.append(action)
-        
-            reward_list.append(reward)
-            done_list.append(done)
-            info_list.append(info)
-
-    obs_list = np.concatenate(obs_list,axis=0)
-    print(obs_list.shape)
-
+    envs = MultiEnvManager(global_env=env,env_num=3)
+    print(envs.env_id)
+    print(envs.stage)
+    for i in range(3):
+        _state, _reward, _done, info = envs.pipe_parents[i].recv()
+        print('_state',_state.shape)
+        print('_reward',_reward)
+        print('_done',_done)
+    
+    
 
