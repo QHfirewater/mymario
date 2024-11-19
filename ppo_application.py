@@ -86,7 +86,7 @@ class PPO:
 
 
         lr=5e-5
-        num_per_epochs = 10 
+        num_per_epochs = 10
         device = 'cuda:0'
         epsilon = 0.2
         beta = 0.01
