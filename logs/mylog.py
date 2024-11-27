@@ -1,5 +1,6 @@
 import logging
 import wandb
+import torch
 
 #程序log
 logger = logging.getLogger(__name__)
@@ -32,3 +33,11 @@ class Wandb_log:
 
 
 
+if __name__ == "__main__":
+    wandb.init(project='test',reinit=True)
+    
+    a = torch.randint(3,5,size=(1,))
+    info = {"a":a,
+            "b":1}
+    wandb.log(data=info,step=info['b'])
+    

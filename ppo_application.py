@@ -77,9 +77,9 @@ class PPO:
                                                     self.model,
                                                     collect_env_num,
                                                     collect_steps,
-                                                    gamma,
+                                                    gamma,  
                                                     tau,
-                                                    device))
+                                                    device))           
         process.start()
         logger.info('初始化数据采集')
 
@@ -87,7 +87,7 @@ class PPO:
 
         lr=5e-5
         num_per_epochs = 10
-        device = 'cuda:0'
+        device = 'cuda:0'  
         epsilon = 0.2
         beta = 0.01
         batch_size = 512
