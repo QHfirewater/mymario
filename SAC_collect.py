@@ -24,14 +24,14 @@ def collector(global_env, global_model, collect_env_num, database, device = 'cpu
             curr_state,_,_,_ = envs.pipe_parents[i].recv()
             curr_states.append(curr_state)
 
-        curr_states = torch.from_numpy(np.concatenate(curr_states, 0)).to(device)
+        curr_states = torch.from_numpy(np.concatenate(curr_states, 0))
 
 
 
     with torch.no_grad():
         model.eval()
         while True:
-            model = model.to(device)
+            model = model
             logits = model(curr_states)
             logits = F.softmax(logits, dim=1)
             old_m = Categorical(logits)  #这里是采用采样方法做的
@@ -42,27 +42,29 @@ def collector(global_env, global_model, collect_env_num, database, device = 'cpu
                 # print('环境：',i)
                 envs.pipe_parents[i].send(action[i].item())
                 _state, _reward, _done, info = envs.pipe_parents[i].recv()
-                # print(curr_states[i].shape)
-                # print(action[i])
-                # print(_reward)
-                # print(_state.shape)
-                # print(_state[0].shape)
-                # print(_done)
                 if _done:
                     _done = 1
                 else:
                     _done = 0
+                
 
-
+            
                 database.add(curr_states[i],action[i],_reward,_state[0],_done)
                 next_state.append(_state)
 
-            next_state = torch.from_numpy(np.concatenate(next_state, 0)).to(device)
+
+
+            next_state = torch.from_numpy(np.concatenate(next_state, 0))
             curr_states = next_state
 
             
             model.load_state_dict(global_model.state_dict())
+
             time.sleep(0.1)
+            # print('子程序中')
+            # print(database.s.is_shared())
+            # print(database.s.data.data_ptr())
+            
             
         
 

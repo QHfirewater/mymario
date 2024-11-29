@@ -14,8 +14,8 @@ class Actor_Net(nn.Module):
         self.conv2 = nn.Conv2d(32, 32, 3, stride=2, padding=1)
         self.conv3 = nn.Conv2d(32, 32, 3, stride=2, padding=1)
         self.conv4 = nn.Conv2d(32, 32, 3, stride=2, padding=1)
-        self.linear = nn.Linear(32 * 6 * 6,512)
-        self.actor_linear = nn.Linear(512, num_actions)
+        self.linear = nn.Linear(32 * 6 * 6,256)
+        self.actor_linear = nn.Linear(256, num_actions)
         self._initialize_weights()
 
     def _initialize_weights(self):
@@ -29,9 +29,10 @@ class Actor_Net(nn.Module):
         x = F.relu(self.conv2(x))
         x = F.relu(self.conv3(x))
         x = F.relu(self.conv4(x))
-     
+
         x = self.linear(x.view(x.size(0), -1))
         x = self.actor_linear(x)
+        x = F.softmax(x, dim=1)
         return x
     
 
@@ -49,8 +50,8 @@ class Double_Q_Net(nn.Module):
                     nn.Conv2d(32, 32, 3, stride=2, padding=1),
                     nn.ReLU())
 
-        self.linear1 = nn.Linear(32 * 6 * 6,512)
-        self.critic_linear1 = nn.Linear(512, num_actions)
+        self.linear1 = nn.Linear(32 * 6 * 6,256)
+        self.critic_linear1 = nn.Linear(256, num_actions)
         self._initialize_weights()
 
 
@@ -62,8 +63,8 @@ class Double_Q_Net(nn.Module):
                     nn.ReLU(),
                     nn.Conv2d(32, 32, 3, stride=2, padding=1),
                     nn.ReLU())
-        self.linear2 = nn.Linear(32 * 6 * 6,512)
-        self.critic_linear2 = nn.Linear(512, num_actions)
+        self.linear2 = nn.Linear(32 * 6 * 6,256)
+        self.critic_linear2 = nn.Linear(256, num_actions)
         self._initialize_weights()
 
     def _initialize_weights(self):
@@ -87,15 +88,29 @@ class Double_Q_Net(nn.Module):
 
 
 if __name__ == '__main__':
-    x = torch.randn(size=(5,4,84,84))
+    x = torch.randn(size=(5,4,84,84)).to('cuda')
     
-    policy = Actor_Net(num_inputs=4,num_actions=7)
+    policy = Actor_Net(num_inputs=4,num_actions=7).to('cuda')
     action = policy(x)
     print(action)
 
-    ctritic = Double_Q_Net(num_inputs=4,num_actions=7) 
+    ctritic = Double_Q_Net(num_inputs=4,num_actions=7).to('cuda') 
     q1,q2 = ctritic(x)
     print(q1,q2)
+
+    probs = action #[b,a_dim]
+    log_probs = torch.log(probs + 1e-8) #[b,a_dim]
+    print(torch.sum(probs * log_probs , dim=1, keepdim=True)) #[b,1]
+    
+
+    # for param in ctritic.parameters():
+    #     print(param)
+    #     print(param.data.cpu())
+    #     print(param.data.cpu().is_shared())
+        
+
+
+    
 
 
     

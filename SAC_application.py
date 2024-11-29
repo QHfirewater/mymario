@@ -12,8 +12,8 @@ warnings.filterwarnings('ignore')
 import time
 from buffer import ReplayBuffer
 
-import os
-os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
+
+
 
 
 
@@ -50,14 +50,16 @@ class SAC:
 
         #生成神经网络模型
         self.actor_target = Actor_Net(self.state_dim, self.action_shape)
-        self.actor_target.share_memory()
-        
+
 
         logger.info('神经网络启动成功')
 
 
+
+        #加载断点数据
         if model_state_dict is not None:
             self.actor_target.load_state_dict(torch.load(model_state_dict))
+        self.actor_target.share_memory()
         print(self.actor_target)
 
         
@@ -70,7 +72,7 @@ class SAC:
 
         #数据库
         device = 'cuda:0'
-        self.database = ReplayBuffer(state_dim =self.obs_shape,dvc=device)
+        self.database = ReplayBuffer(state_dim =self.obs_shape)
         self.database.share_memory()
 
         #数据采集
@@ -88,9 +90,9 @@ class SAC:
      
 
         #模型训练
-        lr=1e-4
+        lr=1e-2
         batch_size = 512
-        gamma = 0.99
+        gamma = 0.9
         alpha = 0.2
         adaptive_alpha = True
         device = 'cuda'
@@ -109,15 +111,16 @@ class SAC:
         logger.info('初始化评估器')
 
 
-    
-    
-    
-       
-    
 
-        
+
+        count  = 0
         while True:
-            time.sleep(3)
+            # count += 1
+            # print(self.database.size)
+            time.sleep(1)
+            # print('主程序中：')
+            # print(self.database.s.is_shared())
+            # print(self.database.s.data.data_ptr())
             # log_info['train_iter'] =curr_episode
             
 
