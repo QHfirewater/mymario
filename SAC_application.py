@@ -116,7 +116,7 @@ class SAC:
         count  = 0
         while True:
             # count += 1
-            # print(self.database.size)
+            print(self.database.size)
             time.sleep(1)
             # print('主程序中：')
             # print(self.database.s.is_shared())

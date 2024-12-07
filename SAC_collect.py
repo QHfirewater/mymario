@@ -35,12 +35,21 @@ def collector(global_env, global_model, collect_env_num, database, device = 'cpu
             logits = model(curr_states)
             logits = F.softmax(logits, dim=1)
             old_m = Categorical(logits)  #这里是采用采样方法做的
-            action = old_m.sample()
+            actions = old_m.sample()
+            
         
             next_state = []
             for i in range(collect_env_num):
                 # print('环境：',i)
-                envs.pipe_parents[i].send(action[i].item())
+                if database.size < 10000:
+                    action =  global_env.action_space.sample()
+                else:
+                    action = actions[i].item()
+
+
+                envs.pipe_parents[i].send(action)  
+                
+
                 _state, _reward, _done, info = envs.pipe_parents[i].recv()
                 if _done:
                     _done = 1
@@ -49,7 +58,7 @@ def collector(global_env, global_model, collect_env_num, database, device = 'cpu
                 
 
             
-                database.add(curr_states[i],action[i],_reward,_state[0],_done)
+                database.add(curr_states[i],action,_reward,_state[0],_done)
                 next_state.append(_state)
 
 
@@ -60,7 +69,7 @@ def collector(global_env, global_model, collect_env_num, database, device = 'cpu
             
             model.load_state_dict(global_model.state_dict())
 
-            time.sleep(0.1)
+            time.sleep(0.01)
             # print('子程序中')
             # print(database.s.is_shared())
             # print(database.s.data.data_ptr())

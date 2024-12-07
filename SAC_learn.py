@@ -53,7 +53,7 @@ class Learner:
         # record = Wandb_log(project_name='mario44',model=self.actor_target)
         record = {}
         while True:
-            if database.size > 2 * self.batch_size:
+            if database.size > 10000:
                 print('******************模型训练次数*************',self.count)
                 self.count += 1
 
